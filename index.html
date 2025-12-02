@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HacelaCorta Pro | Procesador por Lotes</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- JSZip para descargar todo junto -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Cropper.js (Recorte Profesional) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- La librería IA se cargará dinámicamente con múltiples respaldos -->
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-16 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md flex-none z-50">
+        <div class="h-full px-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i data-lucide="scissors" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight">Hacela<span class="text-blue-500">Corta</span> <span
+                        class="text-xs font-light text-gray-500 ml-1">PRO</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="batchCountBadge"
+                    class="hidden text-xs font-mono bg-blue-900/30 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
+                    0 IMÁGENES
+                </span>
+                <button id="donateHeaderBtn"
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 text-xs font-semibold transition-all hover:scale-105">
+                    <i data-lucide="coffee" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Invítame un Café</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 relative flex flex-col overflow-hidden">
+
+        <!-- HERO / UPLOAD -->
+        <div id="uploadSection"
+            class="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 bg-[#020617] transition-transform duration-500">
+            <div class="text-center max-w-2xl">
+                <h1 class="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
+                    Procesamiento <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Masivo
+                        Inteligente</span>
+                </h1>
+                <p class="text-gray-400 text-lg mb-10 max-w-lg mx-auto">
+                    Elimina fondos con IA, recorta y comprime imágenes localmente.
+                </p>
+
+                <div id="dropZone"
+                    class="group relative w-full h-72 rounded-3xl border-2 border-dashed border-gray-700 bg-gray-900/30 hover:border-blue-500 hover:bg-gray-800/50 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center">
+                    <input type="file" id="fileInput"
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/*" multiple>
+
+                    <div
+                        class="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gray-700 transition-all duration-300">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-200 group-hover:text-white">Arrastra tus fotos aquí</h3>
+                    <p class="text-sm text-gray-500 mt-2 font-mono">JPG, PNG, WEBP, JFIF (Max 10)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div id="editorSection"
+            class="flex-1 flex flex-col lg:flex-row h-full hidden opacity-0 transition-opacity duration-500">
+
+            <!-- LEFT: Canvas & Preview -->
+            <div class="flex-1 flex flex-col p-6 overflow-hidden relative">
+
+                <!-- Toolbar -->
+                <div class="flex flex-wrap justify-between items-center mb-4 flex-none gap-4">
+                    <div class="flex items-center gap-2">
+                        <button id="addMoreBtn"
+                            class="flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-white bg-gray-800/50 px-3 py-2 rounded-lg border border-gray-700 transition-colors"
+                            title="Agregar más fotos">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+
+                        <button id="cropBtn"
+                            class="flex items-center gap-2 text-xs font-semibold text-gray-300 hover:text-white bg-gray-800 px-3 py-2 rounded-lg border border-gray-700 transition-colors hover:bg-gray-700">
+                            <i data-lucide="crop" class="w-3.5 h-3.5"></i> <span
+                                class="hidden sm:inline">Recortar</span>
+                        </button>
+
+                        <button id="bgRemoveBtn"
+                            class="flex items-center gap-2 text-xs font-semibold text-purple-300 hover:text-white bg-purple-900/20 px-3 py-2 rounded-lg border border-purple-500/30 transition-colors hover:bg-purple-900/40 group">
+                            <i data-lucide="eraser" class="w-3.5 h-3.5 group-hover:animate-pulse"></i> Sin Fondo <span
+                                class="text-[9px] bg-purple-500 text-white px-1 rounded">IA</span>
+                        </button>
+
+                        <button id="deleteBtn"
+                            class="flex items-center gap-2 text-xs font-semibold text-red-400 hover:text-white bg-red-900/10 px-3 py-2 rounded-lg border border-red-500/20 transition-colors hover:bg-red-500/80 ml-2"
+                            title="Eliminar imagen actual">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <div class="text-center flex-1 hidden lg:block">
+                        <h2 id="currentFileName"
+                            class="text-sm font-semibold text-white truncate max-w-[200px] mx-auto">filename.jpg</h2>
+                        <span id="currentIdxDisplay" class="text-[10px] text-gray-500 font-mono">1 / 5</span>
+                    </div>
+                </div>
+
+                <!-- Main Visualization -->
+                <div
+                    class="flex-1 relative min-h-0 bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden flex items-center justify-center group">
+                    <!-- Checkerboard Background -->
+                    <div class="absolute inset-0 opacity-20"
+                        style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==');">
+                    </div>
+
+                    <!-- AI Loader -->
+                    <div id="aiLoader"
+                        class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center ai-processing backdrop-blur-sm transition-opacity">
+                        <div class="relative w-16 h-16 mb-4">
+                            <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
+                            <div class="absolute inset-0 border-4 border-t-purple-500 rounded-full animate-spin"></div>
+                            <i data-lucide="sparkles"
+                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-purple-400 w-6 h-6 animate-pulse"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">Eliminando Fondo...</h3>
+                        <p id="aiLoaderText" class="text-xs text-purple-300 mt-2 max-w-xs text-center">Iniciando motor
+                            de IA...</p>
+                    </div>
+
+                    <!-- Comparison Component -->
+                    <div id="compareWrapper" class="compare-container relative shadow-2xl transition-all duration-300">
+                        <!-- Modified (After) -->
+                        <img id="imageAfter" class="compare-img" src="" draggable="false">
+
+                        <div
+                            class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-green-400 text-xs font-bold px-3 py-1 rounded-full border border-green-500/30 z-20 pointer-events-none">
+                            <span id="outputFormatLabel">WEBP</span>
+                        </div>
+
+                        <!-- Original (Before) Overlay -->
+                        <div id="overlay" class="img-comp-overlay bg-gray-900/10 backdrop-grayscale-0">
+                            <!-- Nota: object-cover o contain aquí debe coincidir exactamente con el padre -->
+                            <img id="imageBefore" class="compare-img" style="max-width: none;" src="" draggable="false">
+                            <div
+                                class="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 pointer-events-none">
+                                ORIGINAL
+                            </div>
+                        </div>
+
+                        <!-- Handle -->
+                        <div id="sliderHandle" class="slider-handle">
+                            <i data-lucide="chevrons-left-right" class="w-4 h-4 text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thumbnails Strip -->
+                <div class="h-24 mt-4 flex-none glass-panel rounded-xl p-3 flex gap-3 overflow-x-auto thumb-scroll"
+                    id="thumbnailsContainer"></div>
+            </div>
+
+            <!-- RIGHT: Controls -->
+            <div class="w-full lg:w-80 bg-[#0b1121] border-l border-gray-800 flex flex-col shadow-2xl z-30">
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">Configuración Global</h3>
+
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Formato de Salida</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button class="format-btn active bg-blue-600 text-white border-blue-500"
+                                data-format="image/webp">WebP</button>
+                            <button class="format-btn bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700"
+                                data-format="image/jpeg">JPEG</button>
+                            <button class="format-btn bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700"
+                                data-format="image/png">PNG</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-300">Calidad</label>
+                            <span id="qualityValue" class="text-sm font-mono text-blue-400">80%</span>
+                        </div>
+                        <input type="range" id="qualityInput" min="1" max="100" value="80"
+                            class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Redimensionar (Max Ancho)</label>
+                        <div class="relative">
+                            <input type="number" id="maxWidthInput" placeholder="Original"
+                                class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-3 pr-10 py-2 text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-mono placeholder-gray-600">
+                            <span class="absolute right-3 top-2.5 text-xs text-gray-500">px</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-800 my-6"></div>
+
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Vista Actual</h3>
+                    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-400">Entrada</span>
+                            <span id="statOriginal" class="text-xs font-mono text-gray-200">--</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs text-blue-400">Salida</span>
+                            <span id="statCompressed"
+                                class="text-sm font-bold font-mono text-blue-400 flex items-center gap-2">
+                                --
+                                <span id="spinner" class="loader hidden"></span>
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="savingsBar" class="bg-green-500 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                        <div class="text-right mt-1">
+                            <span id="statSavings" class="text-[10px] text-green-400 font-bold">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-gray-800 bg-gray-900/80 backdrop-blur">
+                    <button id="downloadCurrentBtn"
+                        class="w-full mb-3 flex items-center justify-center gap-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 py-2.5 rounded-lg border border-gray-700 transition-all">
+                        <i data-lucide="download" class="w-4 h-4"></i> Descargar Actual
+                    </button>
+                    <button id="downloadAllBtn"
+                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 transition-all active:scale-95">
+                        <i data-lucide="archive" class="w-4 h-4"></i> Descargar Todo (ZIP)
+                    </button>
+                    <div id="zipProgress" class="hidden mt-3 text-center">
+                        <p class="text-[10px] text-blue-400 mb-1 animate-pulse">Procesando lote...</p>
+                        <div class="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
+                            <div id="zipProgressBar" class="bg-blue-500 h-full w-0 transition-all duration-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Crop Modal -->
+    <div id="cropModal" class="fixed inset-0 z-[60] hidden flex flex-col bg-black">
+        <div class="flex justify-between items-center p-4 border-b border-gray-800 bg-gray-900">
+            <h3 class="text-white font-bold flex items-center gap-2"><i data-lucide="crop" class="w-5 h-5"></i> Editor
+                de Recorte</h3>
+            <div class="flex gap-3">
+                <button id="cancelCropBtn"
+                    class="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">Cancelar</button>
+                <button id="applyCropBtn"
+                    class="px-6 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors">Aplicar
+                    Recorte</button>
+            </div>
+        </div>
+        <div class="flex-1 relative bg-[#111827] flex items-center justify-center overflow-hidden p-4">
+            <img id="cropTarget" src="" class="max-w-full max-h-full block">
+        </div>
+        <div class="p-2 bg-gray-900 text-center text-[10px] text-gray-500 font-mono">
+            Usa el mouse o gestos para ajustar el área de recorte
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 modal-backdrop transition-opacity" id="modalBackdrop"></div>
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative z-10 shadow-2xl transform transition-all scale-95 opacity-0"
+            id="modalContent">
+
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div
+                    class="w-16 h-16 bg-gradient-to-tr from-pink-500 to-rose-500 rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg shadow-pink-500/30">
+                    <i data-lucide="heart" class="w-8 h-8 text-white fill-current"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">HacelaCorta es Gratis</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Creé esta herramienta porque odio perder tiempo subiendo fotos a servidores lentos. <br>
+                    <span class="text-gray-300 font-medium">Si te ahorré unos minutos de tu vida hoy</span>, considerar
+                    invitarme un café hace una gran diferencia.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <a href="https://link.mercadopago.com.ar/tualias" target="_blank"
+                    class="block group relative overflow-hidden rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 hover:bg-[#009EE3]/20 transition-all p-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-[#009EE3] flex items-center justify-center flex-none">
+                        <i data-lucide="qr-code" class="text-white w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <h4 class="font-bold text-white text-sm group-hover:text-[#009EE3] transition-colors">Mercado
+                            Pago</h4>
+                        <p class="text-[10px] text-gray-400">Argentina 🇦🇷 • Transferencia simple</p>
+                    </div>
+                </a>
+
+                <div class="block group relative overflow-hidden rounded-xl bg-[#F3BA2F]/10 border border-[#F3BA2F]/30 hover:bg-[#F3BA2F]/20 transition-all p-4 cursor-pointer"
+                    id="binanceBtn">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#F3BA2F] flex items-center justify-center flex-none">
+                            <i data-lucide="bitcoin" class="text-black w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <h4 class="font-bold text-white text-sm group-hover:text-[#F3BA2F] transition-colors">
+                                Binance / Cripto</h4>
+                            <p class="text-[10px] text-gray-400">Click para copiar wallet</p>
+                        </div>
+                    </div>
+                    <div id="copyFeedback"
+                        class="hidden absolute inset-0 bg-[#F3BA2F] flex items-center justify-center text-black font-bold text-sm">
+                        ¡Copiado!</div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button id="closeModalLink" class="text-xs text-gray-500 hover:text-gray-300 underline">Ahora no,
+                    gracias</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden processing canvas -->
+    <canvas id="workerCanvas" class="hidden"></canvas>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
