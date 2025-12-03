@@ -1,5 +1,2 @@
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cross-Origin-Opener-Policy = "same-origin"
-    Cross-Origin-Embedder-Policy = "require-corp"
+# Headers removed - they were blocking CDN resources
+# If you need CORS headers for specific functionality, add them back selectively
