@@ -85,9 +85,9 @@ async function loadImglyWithFallback() {
             }
         },
         {
-            url: 'https://unpkg.com/@imgly/background-removal@1.4.5/dist/browser/index.mjs',
+            url: 'https://esm.sh/@imgly/background-removal@1.4.5',
             config: {
-                publicPath: 'https://unpkg.com/@imgly/background-removal-data@1.4.5/dist/'
+                publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.4.5/dist/'
             }
         }
     ];
