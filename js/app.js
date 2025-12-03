@@ -322,9 +322,24 @@ bgRemoveBtn.addEventListener('click', async () => {
         const config = await loadImglyWithFallback();
 
         aiLoaderText.innerText = "Procesando imagen...";
+        console.log("Config:", config);
+        console.log("imglyRemoveBackground:", window.imglyRemoveBackground);
 
         // Ejecutar eliminación de fondo
-        const blob = await imglyRemoveBackground(currentItem.originalUrl, config);
+        let removeBackgroundFn = window.imglyRemoveBackground;
+
+        // Si es un módulo, intentar acceder a la función correcta
+        if (typeof removeBackgroundFn !== 'function') {
+            if (removeBackgroundFn.removeBackground) {
+                removeBackgroundFn = removeBackgroundFn.removeBackground;
+            } else if (removeBackgroundFn.default) {
+                removeBackgroundFn = removeBackgroundFn.default;
+            }
+        }
+
+        console.log("Llamando a removeBackground con:", currentItem.originalUrl);
+        const blob = await removeBackgroundFn(currentItem.originalUrl, config);
+        console.log("Blob recibido:", blob);
 
         const newUrl = URL.createObjectURL(blob);
         currentItem.originalUrl = newUrl;
@@ -349,13 +364,15 @@ bgRemoveBtn.addEventListener('click', async () => {
         }
 
     } catch (error) {
-        console.error(error);
+        console.error("Error completo:", error);
+        console.error("Stack:", error.stack);
         // Mensaje amigable al usuario en lugar de dejarlo colgado
-        alert("⚠️ No se pudo cargar la Inteligencia Artificial.\n\nEs probable que tu red o navegador esté bloqueando la descarga de los componentes de IA desde 'unpkg.com' o 'jsdelivr.net'.\n\nEl resto de funciones (recorte, compresión) siguen activas.");
+        alert(`⚠️ Error al procesar la imagen con IA:\n\n${error.message}\n\nEl resto de funciones (recorte, compresión) siguen activas.`);
     } finally {
         aiLoader.classList.add('hidden');
     }
 });
+
 
 // --- Other Listeners ---
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-gray-800/50'); });
