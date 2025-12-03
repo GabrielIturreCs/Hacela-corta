@@ -67,24 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <i data-lucide="external-link" class="w-4 h-4 text-gray-500"></i>
         </a>`;
 
-        // Mercado Pago (Alias & Link)
+        // Mercado Pago (Link)
         html += `
-        <div class="flex gap-2">
-            <button onclick="navigator.clipboard.writeText('gabriel.iturre').then(()=>alert('Alias copiado: gabriel.iturre'))" class="flex-1 flex items-center gap-3 p-4 rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 hover:bg-[#009EE3]/20 transition-all group text-left">
-                <img src="images/icons8-mercado-pago-480.png" class="w-8 h-8 rounded-full bg-white p-0.5 object-cover">
-                <div>
-                    <h4 class="text-white font-bold text-xs group-hover:text-[#009EE3]">${isSpanish ? 'Copiar Alias' : 'Copy Alias'}</h4>
-                    <p class="text-[10px] text-gray-400 font-mono">gabriel.iturre</p>
-                </div>
-            </button>
-            <a href="https://link.mercadopago.com.ar/gabrieliturre" target="_blank" class="flex-1 flex items-center gap-3 p-4 rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 hover:bg-[#009EE3]/20 transition-all group">
-                <div class="flex-1">
-                    <h4 class="text-white font-bold text-xs group-hover:text-[#009EE3]">${isSpanish ? 'Link Pago' : 'Payment Link'}</h4>
-                    <p class="text-[10px] text-gray-400">gabi27thx</p>
-                </div>
-                <i data-lucide="arrow-right" class="w-4 h-4 text-[#009EE3]"></i>
-            </a>
-        </div>`;
+        <a href="https://link.mercadopago.com.ar/gabrieliturre" target="_blank" class="flex items-center gap-4 p-4 rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 hover:bg-[#009EE3]/20 transition-all group">
+            <img src="images/icons8-mercado-pago-480.png" class="w-8 h-8 rounded-full bg-white p-0.5 object-cover">
+            <div class="flex-1">
+                <h4 class="text-white font-bold text-sm group-hover:text-[#009EE3] transition-colors">${isSpanish ? 'Mercado Libre' : 'Mercado Libre'}</h4>
+            </div>
+            <i data-lucide="external-link" class="w-4 h-4 text-[#009EE3]"></i>
+        </a>`;
 
         // PayPal
         html += `

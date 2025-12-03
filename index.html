@@ -23,18 +23,27 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="antialiased selection:bg-emerald-500 selection:text-black overflow-x-hidden">
+<body class="antialiased selection:bg-emerald-500 selection:text-black overflow-x-hidden text-gray-200">
+
+    <!-- Premium Background Effects -->
+    <div class="bg-aurora">
+        <div class="gradient-blob blob-1"></div>
+        <div class="gradient-blob blob-2"></div>
+        <div class="gradient-blob blob-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <div class="noise-overlay"></div>
 
     <!-- Header -->
-    <header class="fixed top-0 w-full z-50 glass-panel border-b border-white/5 bg-[#050505]/95 backdrop-blur-xl">
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-white/5 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    <i data-lucide="ghost" class="text-black w-5 h-5"></i>
+                    class="w-8 h-8 bg-emerald-500/20 border border-emerald-500/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)] backdrop-blur-md">
+                    <i data-lucide="ghost" class="text-emerald-400 w-5 h-5"></i>
                 </div>
-                <span class="font-bold text-xl tracking-tight text-white">Ghost<span
-                        class="text-emerald-400">Cut</span></span>
+                <span class="font-bold text-xl tracking-tight text-white drop-shadow-lg">Ghost<span
+                        class="text-emerald-400 animate-pulse">Cut</span></span>
                 <span
                     class="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider privacy-badge ml-2"
                     data-i18n="privacy_badge">
@@ -85,7 +94,7 @@
                     </div>
                     <h3 class="text-2xl font-bold mb-2 text-white" data-i18n="drop_title">Drop your photos here</h3>
                     <p class="text-gray-500 mb-8" data-i18n="drop_subtitle">JPG, PNG, WEBP (Max 10)</p>
-                    <button onclick="document.getElementById('fileInput').click()"
+                    <button
                         class="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-gray-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                         Select Files
                     </button>
