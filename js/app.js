@@ -79,11 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // PayPal
         html += `
-        <a href="https://paypal.me/gabriel13iturre" target="_blank" class="flex items-center gap-4 p-4 rounded-xl bg-[#00457C]/10 border border-[#00457C]/30 hover:bg-[#00457C]/20 transition-all group">
+        <a href="https://paypal.me/gabi27thx" target="_blank" class="flex items-center gap-4 p-4 rounded-xl bg-[#00457C]/10 border border-[#00457C]/30 hover:bg-[#00457C]/20 transition-all group">
             <img src="images/icons8-paypal-480.png" class="w-8 h-8 rounded-full bg-white p-1 object-cover">
             <div class="flex-1">
                 <h4 class="text-white font-bold text-sm group-hover:text-[#00457C] transition-colors">PayPal</h4>
-                <p class="text-[10px] text-gray-400">Global 🌍</p>
+                <p class="text-[10px] text-gray-400">gabi27thx</p>
             </div>
             <i data-lucide="external-link" class="w-4 h-4 text-gray-500"></i>
         </a>`;
@@ -279,7 +279,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Listeners
-    dropZone.onclick = () => fileInput.click();
+    // Fix: Explicitly handle button click to stop propagation and prevent double dialog
+    const selectFilesBtn = document.getElementById('selectFilesBtn');
+    if (selectFilesBtn) {
+        selectFilesBtn.onclick = (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        };
+    }
+
+    dropZone.onclick = (e) => {
+        // Only trigger if clicking the dropzone background, not if bubbling from button (handled above)
+        if (e.target !== selectFilesBtn && !selectFilesBtn.contains(e.target)) {
+            fileInput.click();
+        }
+    };
     dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-emerald-500'); };
     dropZone.ondragleave = (e) => { e.preventDefault(); dropZone.classList.remove('border-emerald-500'); };
     dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('border-emerald-500'); handleFiles(e.dataTransfer.files); };
