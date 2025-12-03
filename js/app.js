@@ -60,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Cafecito
         html += `
         <a href="https://cafecito.app/gabrieliturre" target="_blank" class="flex items-center gap-4 p-4 rounded-xl bg-[#17a2b8]/10 border border-[#17a2b8]/30 hover:bg-[#17a2b8]/20 transition-all group">
-            <img src="https://cafecito.app/logo_b.png" class="w-8 h-8 rounded-full bg-white p-1">
+            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                <i data-lucide="coffee" class="w-5 h-5 text-[#17a2b8]"></i>
+            </div>
             <div class="flex-1">
                 <h4 class="text-white font-bold text-sm group-hover:text-[#17a2b8] transition-colors">${isSpanish ? dictionary.es.cafecito_text : 'Cafecito (Argentina 🇦🇷)'}</h4>
             </div>
