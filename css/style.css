@@ -1,19 +1,19 @@
 :root {
-    --glass-bg: rgba(17, 24, 39, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --active-thumb: #10b981;
-    /* Emerald-500 */
+    --glass-bg: rgba(10, 10, 10, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --neon-green: #10b981;
+    --neon-glow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #020617;
+    background-color: #050505;
+    /* Ultra dark */
     background-image:
-        radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
-        /* Emerald */
-        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
-    /* Cyan */
-    color: #f3f4f6;
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: #e5e7eb;
     min-height: 100vh;
 }
 
@@ -21,48 +21,68 @@ body {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Glassmorphism */
+/* Silicon Valley Glassmorphism */
 .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* Modal Backdrop */
-.modal-backdrop {
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
+/* Privacy Badge Pulse */
+.privacy-badge {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+    box-shadow: var(--neon-glow);
+}
+
+/* Donation Pulse */
+@keyframes heartbit {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
+    }
+}
+
+.donate-pulse {
+    animation: heartbit 2s infinite;
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
 }
 
 /* Thumbnails Scrollbar */
 .thumb-scroll::-webkit-scrollbar {
-    height: 6px;
+    height: 4px;
 }
 
 .thumb-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    background: transparent;
 }
 
 .thumb-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    background: #333;
+    border-radius: 2px;
 }
 
-.thumb-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-/* Slider Styles */
+/* --- SLIDER LOGIC (Window Wipe Effect) --- */
 .compare-container {
     position: relative;
     overflow: hidden;
     user-select: none;
     cursor: col-resize;
-    min-height: 200px;
-    background-color: rgba(0, 0, 0, 0.2);
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==');
 }
 
 .img-comp-overlay {
@@ -72,9 +92,9 @@ body {
     height: 100%;
     width: 50%;
     overflow: hidden;
-    border-right: 2px solid white;
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
     z-index: 10;
+    background: inherit;
 }
 
 .compare-img {
@@ -84,6 +104,13 @@ body {
     object-fit: contain;
     pointer-events: none;
     user-select: none;
+}
+
+#imageBefore {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
 }
 
 .slider-handle {
@@ -98,16 +125,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #000;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    color: black;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     z-index: 20;
     pointer-events: none;
 }
 
-/* Range Slider */
+/* Utils */
 input[type=range] {
     -webkit-appearance: none;
-    appearance: none;
     background: transparent;
 }
 
@@ -118,71 +144,67 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 50%;
     background: #fff;
     margin-top: -6px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     cursor: pointer;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
-    cursor: pointer;
-    background: #374151;
+    background: #333;
     border-radius: 2px;
 }
 
-.loader {
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-left-color: #10b981;
-    /* Emerald */
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 1s linear infinite;
+input[type=number] {
+    background: #111;
+    color: white;
+    border: 1px solid #333;
 }
 
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
+/* Disable Selection for Email Protection */
+.no-select {
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+    cursor: copy;
+}
+
+/* Copy Toast Animation */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
     }
-}
 
-.animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
+    20% {
         opacity: 1;
+        transform: translateY(0);
     }
 
-    50% {
-        opacity: .7;
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
     }
 }
 
-.thumb-item.active {
-    border-color: #10b981;
-    /* Emerald */
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+.toast-active {
+    animation: fadeUp 2s forwards;
 }
 
-/* Cropper Customization */
-.cropper-view-box,
-.cropper-face {
-    border-radius: 0;
+.modal-enter {
+    opacity: 0;
+    transform: scale(0.95);
 }
 
-.cropper-point {
-    background-color: #10b981;
-}
-
-.cropper-line {
-    background-color: #10b981;
-}
-
-/* AI Processing Overlay */
-.ai-processing {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(2, 6, 23, 0.9) 100%);
+.modal-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }

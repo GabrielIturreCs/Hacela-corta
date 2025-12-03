@@ -1,435 +1,400 @@
 <!DOCTYPE html>
-
-<html lang="es">
-
-
-
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-
-
-<!-- JSZip para descargar todo junto -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-
-
-<!-- Cropper.js (Recorte Profesional) -->
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-
-
-<!-- La librería IA se cargará dinámicamente con múltiples respaldos -->
-
-
-
-<!-- Google Fonts -->
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
-    rel="stylesheet">
-
-
-
-<!-- Iconos Lucide -->
-
-<script src="https://unpkg.com/lucide@latest"></script>
-
-
-
-<!DOCTYPE html>
-
-<html lang="es">
-
-
+<html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>HacelaCorta Pro | Procesador por Lotes</title>
-
-    <link rel="icon" type="image/png" href="favicon.png">
-
-
-
-    <!-- Tailwind CSS -->
-
+    <title>GhostCut | Offline AI Image Editor</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-
-
-    <!-- JSZip para descargar todo junto -->
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-
-
-    <!-- Cropper.js (Recorte Profesional) -->
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-
-
-    <!-- La librería IA se cargará dinámicamente con múltiples respaldos -->
-
-
-
-    <!-- Google Fonts -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-
-
-
-    <!-- Iconos Lucide -->
-
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-
-
     <link rel="stylesheet" href="css/style.css">
-
 </head>
 
-
-
-<body
-    class="antialiased selection:bg-emerald-500 selection:text-white flex flex-col h-screen overflow-hidden font-inter">
+<body class="antialiased selection:bg-emerald-500 selection:text-white overflow-x-hidden">
 
     <!-- Header -->
-    <header class="h-16 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md flex-none z-50">
-        <div class="h-full px-6 flex items-center justify-between">
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                    <i data-lucide="ghost" class="text-white w-5 h-5"></i>
+                    class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                    <i data-lucide="ghost" class="text-black w-5 h-5"></i>
                 </div>
-                <span class="font-bold text-xl tracking-tight text-white">Ghost<span
-                        class="text-emerald-400">Cut</span></span>
-                <div
-                    class="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-2">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[10px] font-bold text-emerald-400 tracking-wide uppercase"
-                        data-i18n="privacy_badge">100% PRIVATE • OFFLINE</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <span id="batchCountBadge"
-                    class="hidden text-xs font-mono bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full">
-                    0 IMAGES
+                <span class="font-bold text-xl tracking-tight">Ghost<span class="text-emerald-400">Cut</span></span>
+                <span
+                    class="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider privacy-badge ml-2"
+                    data-i18n="privacy_badge">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i> 100% PRIVATE • OFFLINE
                 </span>
+            </div>
+
+            <div class="flex items-center gap-4">
                 <button id="donateHeaderBtn"
-                    class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 hover:scale-105 transition-all animate-pulse-slow">
-                    <i data-lucide="coffee" class="w-3.5 h-3.5"></i>
-                    <span class="hidden sm:inline" data-i18n="buy_coffee">Buy me a coffee</span>
+                    class="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white text-xs font-bold transition-all shadow-lg hover:shadow-pink-500/20 donate-pulse">
+                    <i data-lucide="coffee" class="w-3 h-3"></i> <span data-i18n="buy_coffee">Buy me a coffee</span>
                 </button>
+                <a href="https://github.com/GabrielIturreCs" target="_blank"
+                    class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 relative flex flex-col overflow-hidden">
+    <!-- Main Content -->
+    <main class="pt-24 pb-20 px-4 min-h-screen flex flex-col items-center">
 
-        <!-- HERO / UPLOAD -->
-        <div id="uploadSection"
-            class="absolute inset-0 flex flex-col items-center justify-center p-6 z-20 bg-[#020617] transition-transform duration-500">
-            <div class="text-center max-w-2xl">
-                <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight text-white">
-                    <span data-i18n="hero_title_1">The Offline</span> <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400"
-                        data-i18n="hero_title_2">AI Image Editor</span>
-                </h1>
-                <p class="text-gray-400 text-lg mb-10 max-w-lg mx-auto" data-i18n="hero_subtitle">
-                    Remove backgrounds, crop, and compress images locally. No data leaves your device.
-                </p>
-
-                <div id="dropZone"
-                    class="group relative w-full h-64 rounded-3xl border-2 border-dashed border-gray-800 bg-gray-900/30 hover:border-emerald-500 hover:bg-gray-800/50 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center">
-                    <input type="file" id="fileInput"
-                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/*" multiple>
-
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-gray-800 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gray-700 transition-all duration-300 shadow-xl">
-                        <i data-lucide="upload-cloud" class="w-8 h-8 text-emerald-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-200 group-hover:text-white transition-colors"
-                        data-i18n="drop_title">Drop your photos here</h3>
-                    <p class="text-sm text-gray-500 mt-2 font-mono" data-i18n="drop_subtitle">JPG, PNG, WEBP (Max 10)
-                    </p>
-                </div>
-            </div>
-
-            <!-- Indie Promise Section -->
-            <div
-                class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full opacity-60 hover:opacity-100 transition-opacity duration-500">
-                <div class="bg-gray-900/40 border border-gray-800 p-5 rounded-xl backdrop-blur-sm">
-                    <div class="flex items-center gap-3 mb-2">
-                        <i data-lucide="shield-check" class="text-emerald-400 w-5 h-5"></i>
-                        <h3 class="font-bold text-gray-200" data-i18n="promise_privacy_title">Why Offline?</h3>
-                    </div>
-                    <p class="text-sm text-gray-400 leading-relaxed" data-i18n="promise_privacy_desc">
-                        Your photos never touch a server. All processing happens in your browser using WebAssembly. 100%
-                        Private.
-                    </p>
-                </div>
-                <div class="bg-gray-900/40 border border-gray-800 p-5 rounded-xl backdrop-blur-sm">
-                    <div class="flex items-center gap-3 mb-2">
-                        <i data-lucide="heart-handshake" class="text-pink-400 w-5 h-5"></i>
-                        <h3 class="font-bold text-gray-200" data-i18n="promise_free_title">Why Free?</h3>
-                    </div>
-                    <p class="text-sm text-gray-400 leading-relaxed" data-i18n="promise_free_desc">
-                        I built this because I hate subscriptions. It's free forever. If it helps you, a coffee is
-                        appreciated but never required.
-                    </p>
-                </div>
-            </div>
+        <!-- Hero Section -->
+        <div class="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                <span data-i18n="hero_title_1">The Offline</span> <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400"
+                    data-i18n="hero_title_2">AI Image Editor</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-xl mx-auto mb-8 font-light" data-i18n="hero_subtitle">
+                Remove backgrounds, crop, and compress images locally. No data leaves your device.
+            </p>
         </div>
 
-        <!-- EDITOR -->
-        <div id="editorSection"
-            class="flex-1 flex flex-col lg:flex-row h-full hidden opacity-0 transition-opacity duration-500">
-
-            <!-- LEFT: Canvas & Preview -->
-            <div class="flex-1 flex flex-col p-6 overflow-hidden relative bg-[#0b1121]">
-
-                <!-- Toolbar -->
-                <div class="flex flex-wrap justify-between items-center mb-4 flex-none gap-4">
-                    <div class="flex items-center gap-2">
-                        <button id="addMoreBtn"
-                            class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white bg-gray-800/50 px-3 py-2 rounded-lg border border-gray-700 transition-colors"
-                            title="Add more photos">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        </button>
-
-                        <button id="cropBtn"
-                            class="flex items-center gap-2 text-xs font-bold text-gray-300 hover:text-white bg-gray-800 px-3 py-2 rounded-lg border border-gray-700 transition-colors hover:bg-gray-700">
-                            <button id="deleteBtn"
-                                class="flex items-center gap-2 text-xs font-bold text-red-400 hover:text-white bg-red-900/10 px-3 py-2 rounded-lg border border-red-500/20 transition-colors hover:bg-red-500/80 ml-2"
-                                title="Delete">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                    </div>
-
-                    <div class="text-center flex-1 hidden lg:block">
-                        <h2 id="currentFileName"
-                            class="text-sm font-semibold text-white truncate max-w-[200px] mx-auto">filename.jpg</h2>
-                        <span id="currentIdxDisplay" class="text-[10px] text-gray-500 font-mono">1 / 5</span>
-                    </div>
-                </div>
-
-                <!-- Main Visualization -->
+        <!-- Upload Section -->
+        <div id="uploadSection" class="w-full max-w-2xl transition-all duration-500 transform">
+            <div id="dropZone"
+                class="glass-panel rounded-3xl border-2 border-dashed border-gray-700 hover:border-emerald-500/50 hover:bg-gray-800/30 transition-all cursor-pointer p-12 text-center group relative overflow-hidden">
                 <div
-                    class="flex-1 relative min-h-0 bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden flex items-center justify-center group">
-                    <!-- Checkerboard Background -->
-                    <div class="absolute inset-0 opacity-20"
-                        style="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==');">
-                    </div>
-
-                    <!-- AI Loader -->
-                    <div id="aiLoader"
-                        class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center ai-processing backdrop-blur-sm transition-opacity">
-                        <div class="relative w-16 h-16 mb-4">
-                            <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
-                            <div class="absolute inset-0 border-4 border-t-purple-500 rounded-full animate-spin"></div>
-                            <i data-lucide="ghost"
-                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-purple-400 w-6 h-6 animate-pulse"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-white" data-i18n="ai_processing_title">Ghost is working...
-                        </h3>
-                        <p id="aiLoaderText" class="text-xs text-purple-300 mt-2 max-w-xs text-center">Starting AI
-                            engine...</p>
-                    </div>
-
-                    <!-- Comparison Component -->
-                    <div id="compareWrapper" class="compare-container relative shadow-2xl transition-all duration-300">
-                        <!-- Modified (After) -->
-                        <img id="imageAfter" class="compare-img" src="" draggable="false">
-
-                        <div
-                            class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 z-20 pointer-events-none">
-                            <span id="outputFormatLabel">WEBP</span>
-                        </div>
-
-                        <!-- Original (Before) Overlay -->
-                        <div id="overlay" class="img-comp-overlay bg-gray-900/10 backdrop-grayscale-0">
-                            <img id="imageBefore" class="compare-img" style="max-width: none;" src="" draggable="false">
-                            <div class="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 pointer-events-none"
-                                data-i18n="label_original">
-                                ORIGINAL
-                            </div>
-                        </div>
-
-                        <!-- Handle -->
-                        <div id="sliderHandle" class="slider-handle">
-                            <i data-lucide="chevrons-left-right" class="w-4 h-4 text-gray-600"></i>
-                        </div>
-                    </div>
+                    class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 </div>
 
-                <!-- Thumbnails Strip -->
-                <div class="h-24 mt-4 flex-none glass-panel rounded-xl p-3 flex gap-3 overflow-x-auto thumb-scroll"
-                    id="thumbnailsContainer"></div>
+                <div class="relative z-10">
+                    <div
+                        class="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 text-emerald-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white" data-i18n="drop_title">Drop your photos here</h3>
+                    <p class="text-gray-500 mb-8" data-i18n="drop_subtitle">JPG, PNG, WEBP (Max 10)</p>
+                    <button onclick="document.getElementById('fileInput').click()"
+                        class="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-gray-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        Select Files
+                    </button>
+                    <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor Section -->
+        <div id="editorSection" class="w-full max-w-6xl hidden opacity-0 transition-opacity duration-500">
+
+            <!-- Toolbar -->
+            <div
+                class="glass-panel rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 sticky top-20 z-40 shadow-2xl">
+                <div class="flex items-center gap-4 overflow-x-auto thumb-scroll pb-1 sm:pb-0 max-w-[50%] sm:max-w-none"
+                    id="thumbnailsContainer">
+                    <!-- Thumbnails injected here -->
+                </div>
+
+                <div class="flex items-center gap-3 ml-auto">
+                    <span id="batchCountBadge"
+                        class="hidden px-2 py-1 bg-gray-800 rounded text-[10px] font-mono text-gray-400 border border-gray-700"></span>
+                    <button id="addMoreBtn"
+                        class="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition-colors"
+                        title="Add more images">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                    </button>
+                    <div class="h-6 w-px bg-gray-700 mx-2"></div>
+                    <button id="deleteBtn"
+                        class="p-2 hover:bg-red-900/30 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                        title="Remove current">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- RIGHT: Controls -->
-            <div class="w-full lg:w-80 bg-[#0f172a] border-l border-gray-800 flex flex-col shadow-2xl z-30">
-                <div class="p-6 flex-1 overflow-y-auto">
-                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6"
-                        data-i18n="settings_title">Global Settings</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <div class="mb-8">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="format_label">Output
-                            Format</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button class="format-btn active bg-emerald-600 text-white border-emerald-500"
-                                data-format="image/webp">WebP</button>
-                            <button class="format-btn bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700"
-                                data-format="image/jpeg">JPEG</button>
-                            <button class="format-btn bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700"
-                                data-format="image/png">PNG</button>
+                <!-- Main Preview (Canvas/Slider) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div
+                        class="glass-panel rounded-2xl p-1 relative min-h-[500px] flex items-center justify-center bg-[#020617] overflow-hidden group">
+
+                        <!-- Spinner -->
+                        <div id="spinner"
+                            class="absolute inset-0 z-30 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center hidden">
+                            <div
+                                class="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mb-4">
+                            </div>
+                            <span class="text-emerald-400 font-mono text-sm animate-pulse">PROCESSING...</span>
                         </div>
+
+                        <!-- Comparison Slider -->
+                        <div id="compareWrapper"
+                            class="compare-container w-full h-full relative rounded-xl overflow-hidden">
+                            <img id="imageBefore" src=""
+                                class="absolute top-0 left-0 w-full h-full object-contain opacity-50 blur-xl scale-110 transition-all duration-700"
+                                alt="Original">
+
+                            <!-- Modified Image (Background) -->
+                            <img id="imageAfter" src=""
+                                class="compare-img absolute top-0 left-0 w-full h-full object-contain z-0"
+                                alt="Modified">
+
+                            <!-- Original Image (Overlay) -->
+                            <div id="overlay" class="img-comp-overlay">
+                                <img id="imageBeforeOverlay" src="" class="compare-img" alt="Original">
+                            </div>
+
+                            <!-- Handle -->
+                            <div id="sliderHandle" class="slider-handle">
+                                <i data-lucide="code-2" class="w-4 h-4 text-black"></i>
+                            </div>
+                        </div>
+
+                        <!-- Floating Stats -->
+                        <div class="absolute bottom-6 left-6 z-20 flex gap-4">
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur border border-white/10 text-xs font-mono">
+                                <span class="text-gray-400 block text-[10px] mb-0.5" data-i18n="stat_input">INPUT</span>
+                                <span id="statOriginal" class="text-white font-bold">0 MB</span>
+                            </div>
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur border border-white/10 text-xs font-mono">
+                                <span class="text-gray-400 block text-[10px] mb-0.5"
+                                    data-i18n="stat_output">OUTPUT</span>
+                                <span id="statCompressed" class="text-emerald-400 font-bold">0 MB</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Filename -->
+                        <div class="absolute top-6 left-6 z-20 max-w-[80%]">
+                            <h3 id="currentFileName" class="text-sm font-bold text-white drop-shadow-md truncate">
+                                filename.jpg</h3>
+                        </div>
+
                     </div>
 
-                    <div class="mb-8">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-300" data-i18n="quality_label">Quality</label>
-                            <span id="qualityValue" class="text-sm font-mono text-emerald-400">80%</span>
-                        </div>
-                        <input type="range" id="qualityInput" min="1" max="100" value="80"
-                            class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
-                    </div>
-
-                    <div class="mb-8">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="resize_label">Resize (Max
-                            Width)</label>
-                        <div class="relative">
-                            <input type="number" id="maxWidthInput" placeholder="Original"
-                                class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-3 pr-10 py-2 text-white text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none font-mono placeholder-gray-600">
-                            <span class="absolute right-3 top-2.5 text-xs text-gray-500">px</span>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-800 my-6"></div>
-
-                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4" data-i18n="stats_title">
-                        Current View</h3>
-                    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs text-gray-400" data-i18n="stat_input">Input</span>
-                            <span id="statOriginal" class="text-xs font-mono text-gray-200">--</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs text-emerald-400" data-i18n="stat_output">Output</span>
-                            <span id="statCompressed"
-                                class="text-sm font-bold font-mono text-emerald-400 flex items-center gap-2">
-                                --
-                                <span id="spinner" class="loader hidden"></span>
-                            </span>
-                        </div>
-                        <div class="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                            <div id="savingsBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
-                        </div>
-                        <div class="text-right mt-1">
-                            <span id="statSavings" class="text-[10px] text-emerald-400 font-bold">--</span>
-                        </div>
+                    <!-- Actions Bar -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="cropBtn"
+                            class="flex-1 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium transition-all flex items-center justify-center gap-2 border border-gray-700">
+                            <i data-lucide="crop" class="w-4 h-4"></i> <span data-i18n="btn_crop">Crop</span>
+                        </button>
+                        <button id="downloadCurrentBtn"
+                            class="flex-[2] py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-2 shadow-lg shadow-white/10">
+                            <i data-lucide="download" class="w-4 h-4"></i> <span data-i18n="btn_download_one">Download
+                                Current</span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="p-6 border-t border-gray-800 bg-gray-900/80 backdrop-blur">
-                    <button id="downloadCurrentBtn"
-                        class="w-full mb-3 flex items-center justify-center gap-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 py-2.5 rounded-lg border border-gray-700 transition-all">
-                        <i data-lucide="download" class="w-4 h-4"></i> <span data-i18n="btn_download_one">Download
-                            Current</span>
-                    </button>
-                    <button id="downloadAllBtn"
-                        class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 transition-all active:scale-95">
-                        <i data-lucide="archive" class="w-4 h-4"></i> <span data-i18n="btn_download_all">Download All
-                            (ZIP)</span>
-                    </button>
-                    <div id="zipProgress" class="hidden mt-3 text-center">
-                        <p class="text-[10px] text-emerald-400 mb-1 animate-pulse" data-i18n="zipping_status">Zipping...
-                        </p>
-                        <div class="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
-                            <div id="zipProgressBar" class="bg-emerald-500 h-full w-0 transition-all duration-200">
+                <!-- Sidebar Controls -->
+                <div class="space-y-6">
+
+                    <!-- Settings Panel -->
+                    <div class="glass-panel rounded-2xl p-6">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
+                            <h3 class="font-bold text-sm tracking-wider text-gray-300" data-i18n="settings_title">GLOBAL
+                                SETTINGS</h3>
+                        </div>
+
+                        <!-- Format Selection -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="text-xs font-medium text-gray-400" data-i18n="lbl_format">Output
+                                    Format</label>
+                                <span id="outputFormatLabel" class="text-xs font-bold text-emerald-400">WEBP</span>
                             </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button
+                                    class="format-btn active py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold border border-emerald-500 transition-all"
+                                    data-format="image/webp">WEBP</button>
+                                <button
+                                    class="format-btn py-2 rounded-lg bg-gray-900 text-gray-500 text-xs font-bold border border-gray-800 hover:border-gray-600 transition-all"
+                                    data-format="image/jpeg">JPEG</button>
+                                <button
+                                    class="format-btn py-2 rounded-lg bg-gray-900 text-gray-500 text-xs font-bold border border-gray-800 hover:border-gray-600 transition-all"
+                                    data-format="image/png">PNG</button>
+                            </div>
+                        </div>
+
+                        <!-- Quality Slider -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="text-xs font-medium text-gray-400" data-i18n="lbl_quality">Quality</label>
+                                <span id="qualityValue" class="text-xs font-bold text-white">80%</span>
+                            </div>
+                            <input type="range" id="qualityInput" min="10" max="100" value="80"
+                                class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <!-- Resize Input -->
+                        <div class="mb-6">
+                            <label class="text-xs font-medium text-gray-400 mb-3 block" data-i18n="lbl_resize">Resize
+                                (Max Width)</label>
+                            <div class="relative">
+                                <input type="number" id="maxWidthInput" placeholder="e.g. 1920"
+                                    class="w-full bg-[#0a0a0a] border border-gray-700 rounded-lg py-2 pl-3 pr-10 text-sm text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                                <span class="absolute right-3 top-2.5 text-xs text-gray-500">px</span>
+                            </div>
+                        </div>
+
+                        <!-- Savings Indicator -->
+                        <div class="p-4 rounded-xl bg-black/40 border border-white/5">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs text-gray-400">Savings</span>
+                                <span id="statSavings" class="text-xs font-bold text-emerald-400">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                                <div id="savingsBar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batch Download -->
+                    <button id="downloadAllBtn"
+                        class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 group">
+                        <i data-lucide="archive" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span data-i18n="btn_download_zip">Download All (ZIP)</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Storytime / Indie Promise -->
+        <div
+            class="max-w-4xl mx-auto mt-32 grid md:grid-cols-2 gap-12 items-start opacity-80 hover:opacity-100 transition-opacity">
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="lock" class="w-5 h-5 text-emerald-400"></i>
+                    <span data-i18n="promise_1_title">Why Offline?</span>
+                </h3>
+                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="promise_1_desc">
+                    Most online tools upload your photos to a server. That's slow and risky.
+                    GhostCut runs entirely in your browser using WebAssembly. Your photos never leave your device.
+                </p>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i data-lucide="heart" class="w-5 h-5 text-pink-500"></i>
+                    <span data-i18n="promise_2_title">Why Free?</span>
+                </h3>
+                <p class="text-gray-400 text-sm leading-relaxed" data-i18n="promise_2_desc">
+                    I'm an indie developer who hates subscriptions. I built this tool for myself, and decided to share
+                    it.
+                    No ads, no tracking, no paywalls. Just code.
+                </p>
+            </div>
+        </div>
+
+        <!-- Founder / Contact Card -->
+        <div class="max-w-2xl mx-auto mt-24 mb-12">
+            <div class="glass-panel rounded-2xl p-8 border border-white/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16">
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                    <div class="w-24 h-24 rounded-full border-2 border-emerald-500/30 overflow-hidden shadow-2xl">
+                        <img src="images/gabrielfoto.png" alt="Gabriel" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left flex-1">
+                        <div class="flex items-center justify-center md:justify-start gap-2 mb-2">
+                            <span class="text-[10px] font-bold tracking-widest text-emerald-500 uppercase"
+                                data-i18n="meet_maker">MEET THE MAKER</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Gabriel</h3>
+                        <p class="text-emerald-400 text-sm font-mono mb-4" data-i18n="founder_role">Full Stack Software
+                            Engineer</p>
+                        <p class="text-gray-400 text-sm mb-6" data-i18n="founder_bio">
+                            Building high-performance software with a focus on privacy and UX. GhostCut is my
+                            contribution to a faster, safer web.
+                        </p>
+
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                            <a href="https://www.linkedin.com/in/gabriel-iturre-73900626a/" target="_blank"
+                                class="p-2 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 border border-white/10 hover:border-[#0077b5]/50 transition-all text-gray-400 hover:text-[#0077b5]">
+                                <i data-lucide="linkedin" class="w-4 h-4"></i>
+                            </a>
+                            <a href="https://www.youtube.com/@lebetlabs" target="_blank"
+                                class="p-2 rounded-lg bg-white/5 hover:bg-[#FF0000]/20 border border-white/10 hover:border-[#FF0000]/50 transition-all text-gray-400 hover:text-[#FF0000]">
+                                <i data-lucide="youtube" class="w-4 h-4"></i>
+                            </a>
+                            <button id="emailCopyBtn"
+                                class="group flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+                                <i data-lucide="mail" class="w-4 h-4 text-gray-400 group-hover:text-white"></i>
+                                <span id="emailText"
+                                    class="text-sm text-gray-300 font-mono no-select">gabriel@example.com</span>
+                                <!-- TODO: Update Email -->
+                                <i data-lucide="copy"
+                                    class="w-3 h-3 text-gray-500 group-hover:text-white ml-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                            <span id="copyToast"
+                                class="text-xs text-emerald-400 font-bold opacity-0 transition-opacity">Copied!</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
 
-    <!-- Crop Modal -->
-    <div id="cropModal" class="fixed inset-0 z-[60] hidden flex flex-col bg-black">
-        <div class="flex justify-between items-center p-4 border-b border-gray-800 bg-gray-900">
-            <h3 class="text-white font-bold flex items-center gap-2"><i data-lucide="crop" class="w-5 h-5"></i> <span
-                    data-i18n="crop_modal_title">Crop Editor</span></h3>
-            <div class="flex gap-3">
-                <button id="cancelCropBtn" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
-                    data-i18n="btn_cancel">Cancel</button>
-                <button id="applyCropBtn"
-                    class="px-6 py-2 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
-                    data-i18n="btn_apply">Apply</button>
-            </div>
-        </div>
-        <div class="flex-1 relative bg-[#111827] flex items-center justify-center overflow-hidden p-4">
-            <img id="cropTarget" src="" class="max-w-full max-h-full block">
-        </div>
-        <div class="p-2 bg-gray-900 text-center text-[10px] text-gray-500 font-mono" data-i18n="crop_instructions">
-            Use mouse or gestures to adjust crop area
-        </div>
-    </div>
+    <!-- Hidden Worker Canvas -->
+    <canvas id="workerCanvas" class="hidden"></canvas>
 
     <!-- Donation Modal -->
-    <div id="donationModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 modal-backdrop transition-opacity" id="modalBackdrop"></div>
-        <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative z-10 shadow-2xl transform transition-all scale-95 opacity-0"
-            id="modalContent">
-
-            <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+    <div id="donationModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div id="modalBackdrop" class="absolute inset-0 modal-backdrop transition-opacity duration-300"></div>
+        <div id="modalContent"
+            class="relative bg-[#0a0a0a] border border-gray-800 rounded-2xl w-full max-w-md p-6 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <div class="text-center mb-6">
+            <div class="text-center mb-8">
                 <div
-                    class="w-16 h-16 bg-gradient-to-tr from-pink-500 to-rose-500 rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg shadow-pink-500/30">
-                    <i data-lucide="heart" class="w-8 h-8 text-white fill-current"></i>
+                    class="w-16 h-16 bg-pink-500/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                    <i data-lucide="heart" class="w-8 h-8 text-pink-500 fill-pink-500"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2" data-i18n="donate_title">GhostCut is Free</h3>
+                <h3 class="text-2xl font-bold text-white mb-2" data-i18n="donate_title">Support Indie Software</h3>
                 <p class="text-gray-400 text-sm leading-relaxed" data-i18n="donate_desc">
-                    I built this because I hate subscriptions. It's free forever. <br>
-                    <span class="text-gray-300 font-medium">If I saved you some time today</span>, buying me a coffee
-                    makes a huge difference.
+                    GhostCut is 100% free and private. If I saved you some time today, buying me a coffee means a lot.
                 </p>
             </div>
 
-            <div class="space-y-3" id="donationOptions">
-                <!-- Dynamic Content injected by JS -->
+            <div id="donationOptions" class="space-y-3 mb-6">
+                <!-- Injected via JS -->
             </div>
 
-            <div class="mt-6 text-center">
-                <button id="closeModalLink" class="text-xs text-gray-500 hover:text-gray-300 underline"
-                    data-i18n="donate_close">No thanks, maybe later</button>
-            </div>
+            <button id="closeModalLink"
+                class="w-full py-3 text-sm text-gray-500 hover:text-white transition-colors font-medium"
+                data-i18n="btn_skip">
+                No thanks, just want my photos
+            </button>
         </div>
     </div>
 
-    <!-- Hidden processing canvas -->
-    <canvas id="workerCanvas" class="hidden"></canvas>
+    <!-- Crop Modal -->
+    <div id="cropModal" class="fixed inset-0 z-[70] hidden bg-black/90 flex flex-col">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#0a0a0a]">
+            <span class="font-bold text-white" data-i18n="crop_title">Crop Editor</span>
+            <div class="flex gap-4">
+                <button id="cancelCropBtn" class="text-sm text-gray-400 hover:text-white"
+                    data-i18n="btn_cancel">Cancel</button>
+                <button id="applyCropBtn"
+                    class="px-4 py-1.5 bg-emerald-600 rounded-lg text-sm font-bold text-white hover:bg-emerald-500"
+                    data-i18n="btn_apply">Apply</button>
+            </div>
+        </div>
+        <div class="flex-1 p-4 overflow-hidden flex items-center justify-center bg-black">
+            <img id="cropTarget" src="" class="max-h-full max-w-full">
+        </div>
+    </div>
 
     <script src="js/app.js"></script>
 </body>
-
-
 
 </html>
