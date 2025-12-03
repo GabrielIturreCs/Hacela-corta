@@ -476,25 +476,35 @@ bgRemoveBtn.addEventListener('click', async () => {
             else if (removeBackgroundFn.default) removeBackgroundFn = removeBackgroundFn.default;
         }
 
-        // 4. Ejecutar con Timeout y Progreso
+        // 4. Configurar progreso real
+        const processingConfig = {
+            ...config,
+            progress: (key, current, total) => {
+                const type = key.split(':')[0]; // 'fetch' or 'compute'
+                const percent = Math.round((current / total) * 100);
+
+                if (type === 'fetch') {
+                    aiLoaderText.innerText = `Descargando modelo IA... ${percent}%`;
+                } else if (type === 'compute') {
+                    aiLoaderText.innerText = `Procesando imagen... ${percent}%`;
+                } else {
+                    aiLoaderText.innerText = `Cargando... ${percent}%`;
+                }
+            }
+        };
+
+        console.log("Iniciando removeBackground con config:", processingConfig);
+
+        // 5. Ejecutar con Timeout
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('TIMEOUT_AI')), 120000); // 2 minutos
         });
 
-        let elapsed = 0;
-        const progressInterval = setInterval(() => {
-            elapsed += 5;
-            aiLoaderText.innerText = `Procesando IA... (${elapsed}s)`;
-        }, 5000);
-
-        console.log("Iniciando removeBackground...");
-
         const blob = await Promise.race([
-            removeBackgroundFn(imageToProcess, config),
+            removeBackgroundFn(imageToProcess, processingConfig),
             timeoutPromise
         ]);
 
-        clearInterval(progressInterval);
         console.log("IA completada. Blob size:", blob.size);
 
         // 5. Actualizar UI
