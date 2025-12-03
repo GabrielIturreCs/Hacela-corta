@@ -317,6 +317,12 @@ bgRemoveBtn.addEventListener('click', async () => {
     aiLoader.classList.remove('hidden');
     aiLoaderText.innerText = "Conectando con motor de IA...";
 
+    // Verificar soporte de alto rendimiento
+    if (!window.crossOriginIsolated) {
+        console.warn("⚠️ La página no está en modo 'crossOriginIsolated'. La IA funcionará lento.");
+        aiLoaderText.innerText = "Modo lento detectado (falta COOP/COEP)...";
+    }
+
     try {
         // 1. Optimizar imagen si es muy grande (max 1500px) para evitar cuelgues
         let imageToProcess = currentItem.originalUrl;
