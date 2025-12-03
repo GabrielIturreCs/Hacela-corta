@@ -56,8 +56,117 @@ let appState = {
         quality: 0.8,
         format: 'image/webp',
         maxWidth: null
+    },
+    language: 'en' // Default
+};
+
+// --- i18n & Translations ---
+const translations = {
+    en: {
+        privacy_badge: "100% PRIVATE • OFFLINE",
+        buy_coffee: "Buy me a coffee",
+        hero_title_1: "The Offline",
+        hero_title_2: "AI Image Editor",
+        hero_subtitle: "Remove backgrounds, crop, and compress images locally. No data leaves your device.",
+        drop_title: "Drop your photos here",
+        drop_subtitle: "JPG, PNG, WEBP (Max 10)",
+        promise_privacy_title: "Why Offline?",
+        promise_privacy_desc: "Your photos never touch a server. All processing happens in your browser using WebAssembly. 100% Private.",
+        promise_free_title: "Why Free?",
+        promise_free_desc: "I built this because I hate subscriptions. It's free forever. If it helps you, a coffee is appreciated but never required.",
+        btn_crop: "Crop",
+        btn_bg_remove: "Remove BG",
+        ai_processing_title: "Ghost is working...",
+        label_original: "ORIGINAL",
+        settings_title: "Global Settings",
+        format_label: "Output Format",
+        quality_label: "Quality",
+        resize_label: "Resize (Max Width)",
+        stats_title: "Current View",
+        stat_input: "Input",
+        stat_output: "Output",
+        btn_download_one: "Download Current",
+        btn_download_all: "Download All (ZIP)",
+        zipping_status: "Zipping...",
+        crop_modal_title: "Crop Editor",
+        btn_cancel: "Cancel",
+        btn_apply: "Apply",
+        crop_instructions: "Use mouse or gestures to adjust crop area",
+        donate_title: "GhostCut is Free",
+        donate_desc: "I built this because I hate subscriptions. It's free forever. <br><span class='text-gray-300 font-medium'>If I saved you some time today</span>, buying me a coffee makes a huge difference.",
+        donate_close: "No thanks, maybe later",
+        // Dynamic
+        donate_mp: "Mercado Pago",
+        donate_mp_desc: "Argentina 🇦🇷 • Simple transfer",
+        donate_kofi: "Ko-fi / PayPal",
+        donate_kofi_desc: "International 🌍 • Support the dev",
+        donate_crypto: "Binance / Crypto",
+        donate_crypto_desc: "Click to copy wallet"
+    },
+    es: {
+        privacy_badge: "100% PRIVADO • OFFLINE",
+        buy_coffee: "Invítame un café",
+        hero_title_1: "Editor de Imágenes",
+        hero_title_2: "IA Offline y Seguro",
+        hero_subtitle: "Elimina fondos, recorta y comprime localmente. Tus fotos nunca salen de tu dispositivo.",
+        drop_title: "Arrastra tus fotos aquí",
+        drop_subtitle: "JPG, PNG, WEBP (Max 10)",
+        promise_privacy_title: "¿Por qué Offline?",
+        promise_privacy_desc: "Tus fotos nunca tocan un servidor. Todo el procesamiento ocurre en tu navegador usando WebAssembly. 100% Privado.",
+        promise_free_title: "¿Por qué Gratis?",
+        promise_free_desc: "Odio las suscripciones tanto como tú. Es gratis para siempre. Si te sirve, un café se agradece pero no es obligatorio.",
+        btn_crop: "Recortar",
+        btn_bg_remove: "Sin Fondo",
+        ai_processing_title: "Ghost está trabajando...",
+        label_original: "ORIGINAL",
+        settings_title: "Configuración Global",
+        format_label: "Formato de Salida",
+        quality_label: "Calidad",
+        resize_label: "Redimensionar (Ancho Max)",
+        stats_title: "Vista Actual",
+        stat_input: "Entrada",
+        stat_output: "Salida",
+        btn_download_one: "Descargar Actual",
+        btn_download_all: "Descargar Todo (ZIP)",
+        zipping_status: "Comprimiendo...",
+        crop_modal_title: "Editor de Recorte",
+        btn_cancel: "Cancelar",
+        btn_apply: "Aplicar",
+        crop_instructions: "Usa el mouse o gestos para ajustar el área",
+        donate_title: "GhostCut es Gratis",
+        donate_desc: "Creé esto porque odio las suscripciones. Es gratis para siempre. <br><span class='text-gray-300 font-medium'>Si te ahorré tiempo hoy</span>, invitarme un café hace una gran diferencia.",
+        donate_close: "Ahora no, gracias",
+        // Dynamic
+        donate_mp: "Mercado Pago",
+        donate_mp_desc: "Argentina 🇦🇷 • Transferencia simple",
+        donate_kofi: "Ko-fi / PayPal",
+        donate_kofi_desc: "Internacional 🌍 • Apoya al dev",
+        donate_crypto: "Binance / Cripto",
+        donate_crypto_desc: "Click para copiar wallet"
     }
 };
+
+function detectLanguage() {
+    const lang = navigator.language || navigator.userLanguage;
+    if (lang.startsWith('es')) return 'es';
+    return 'en';
+}
+
+function updateTexts() {
+    const lang = appState.language;
+    const t = translations[lang];
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key]) {
+            if (el.tagName === 'INPUT' && el.placeholder) {
+                el.placeholder = t[key];
+            } else {
+                el.innerHTML = t[key];
+            }
+        }
+    });
+}
 
 // --- Core Helpers ---
 function getExtension(mime) {
@@ -122,6 +231,10 @@ async function loadImglyWithFallback() {
 }
 
 // --- Initialization Logic ---
+// Auto-detect language on start
+appState.language = detectLanguage();
+updateTexts();
+
 function handleFiles(fileList) {
     const validFiles = Array.from(fileList).filter(f => f.type.startsWith('image/')).slice(0, 10);
 
@@ -612,6 +725,8 @@ function toggleModal(show) {
         void donationModal.offsetWidth;
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
+
+        renderDonationOptions();
     } else {
         modalContent.classList.remove('scale-100', 'opacity-100');
         modalContent.classList.add('scale-95', 'opacity-0');
@@ -619,17 +734,79 @@ function toggleModal(show) {
     }
 }
 
+function renderDonationOptions() {
+    const container = document.getElementById('donationOptions');
+    const t = translations[appState.language];
+    container.innerHTML = '';
+
+    // Option 1: Mercado Pago (Only for Spanish) or Ko-fi (International)
+    if (appState.language === 'es') {
+        const mpLink = document.createElement('a');
+        mpLink.href = "https://link.mercadopago.com.ar/tualias"; // REPLACE WITH REAL ALIAS
+        mpLink.target = "_blank";
+        mpLink.className = "block group relative overflow-hidden rounded-xl bg-[#009EE3]/10 border border-[#009EE3]/30 hover:bg-[#009EE3]/20 transition-all p-4 flex items-center gap-4";
+        mpLink.innerHTML = `
+            <div class="w-10 h-10 rounded-full bg-[#009EE3] flex items-center justify-center flex-none">
+                <i data-lucide="qr-code" class="text-white w-5 h-5"></i>
+            </div>
+            <div class="flex-1 text-left">
+                <h4 class="font-bold text-white text-sm group-hover:text-[#009EE3] transition-colors">${t.donate_mp}</h4>
+                <p class="text-[10px] text-gray-400">${t.donate_mp_desc}</p>
+            </div>
+        `;
+        container.appendChild(mpLink);
+    } else {
+        const kofiLink = document.createElement('a');
+        kofiLink.href = "https://ko-fi.com/tualias"; // REPLACE WITH REAL KO-FI
+        kofiLink.target = "_blank";
+        kofiLink.className = "block group relative overflow-hidden rounded-xl bg-[#FF5E5B]/10 border border-[#FF5E5B]/30 hover:bg-[#FF5E5B]/20 transition-all p-4 flex items-center gap-4";
+        kofiLink.innerHTML = `
+            <div class="w-10 h-10 rounded-full bg-[#FF5E5B] flex items-center justify-center flex-none">
+                <i data-lucide="coffee" class="text-white w-5 h-5"></i>
+            </div>
+            <div class="flex-1 text-left">
+                <h4 class="font-bold text-white text-sm group-hover:text-[#FF5E5B] transition-colors">${t.donate_kofi}</h4>
+                <p class="text-[10px] text-gray-400">${t.donate_kofi_desc}</p>
+            </div>
+        `;
+        container.appendChild(kofiLink);
+    }
+
+    // Option 2: Crypto (Always visible)
+    const cryptoBtn = document.createElement('div');
+    cryptoBtn.className = "block group relative overflow-hidden rounded-xl bg-[#F3BA2F]/10 border border-[#F3BA2F]/30 hover:bg-[#F3BA2F]/20 transition-all p-4 cursor-pointer";
+    cryptoBtn.innerHTML = `
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-[#F3BA2F] flex items-center justify-center flex-none">
+                <i data-lucide="bitcoin" class="text-black w-5 h-5"></i>
+            </div>
+            <div class="flex-1 text-left">
+                <h4 class="font-bold text-white text-sm group-hover:text-[#F3BA2F] transition-colors">${t.donate_crypto}</h4>
+                <p class="text-[10px] text-gray-400">${t.donate_crypto_desc}</p>
+            </div>
+        </div>
+        <div id="copyFeedback" class="hidden absolute inset-0 bg-[#F3BA2F] flex items-center justify-center text-black font-bold text-sm">
+            Copied!
+        </div>
+    `;
+
+    cryptoBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(CRYPTO_WALLET).then(() => {
+            const fb = cryptoBtn.querySelector('#copyFeedback');
+            fb.classList.remove('hidden');
+            setTimeout(() => fb.classList.add('hidden'), 2000);
+        });
+    });
+
+    container.appendChild(cryptoBtn);
+    lucide.createIcons(); // Re-init icons for new elements
+}
+
 donateHeaderBtn.addEventListener('click', () => toggleModal(true));
 closeModal.addEventListener('click', () => toggleModal(false));
 closeModalLink.addEventListener('click', () => toggleModal(false));
 modalBackdrop.addEventListener('click', () => toggleModal(false));
 
-binanceBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(CRYPTO_WALLET).then(() => {
-        copyFeedback.classList.remove('hidden');
-        setTimeout(() => copyFeedback.classList.add('hidden'), 2000);
-    });
-});
 
 // --- Helpers UI ---
 function updateBatchBadge() {
